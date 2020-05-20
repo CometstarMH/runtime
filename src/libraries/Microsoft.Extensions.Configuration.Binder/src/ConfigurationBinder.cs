@@ -207,11 +207,15 @@ namespace Microsoft.Extensions.Configuration
                 return;
             }
 
-            propertyValue = BindInstance(property.PropertyType, propertyValue, config.GetSection(property.Name), options);
-
-            if (propertyValue != null && hasSetter)
+            // If the property does not exist in the configuration, then do not touch it
+            if (config.GetSection(property.Name).Exists())
             {
-                property.SetValue(instance, propertyValue);
+                propertyValue = BindInstance(property.PropertyType, propertyValue, config.GetSection(property.Name), options);
+
+                if (propertyValue != null && hasSetter)
+                {
+                    property.SetValue(instance, propertyValue);
+                }
             }
         }
 
